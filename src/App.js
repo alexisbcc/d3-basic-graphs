@@ -1,6 +1,6 @@
 import './App.css';
 // Components
-import Line from './components/line';
+import Line from './components/line.jsx';
 
 function App() {
   return (
