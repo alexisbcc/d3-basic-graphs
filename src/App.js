@@ -1,11 +1,11 @@
 import './App.css';
 // Components
-import Line from './components/line.jsx';
+import GraphContainer from './components/graphcontainer.jsx';
 
 function App() {
   return (
     <div className="App">
-      <Line/>
+        <GraphContainer/>
     </div>
   );
 }

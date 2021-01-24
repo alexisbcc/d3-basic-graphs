@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { select, line, axisBottom, axisRight, curveCardinal, scaleLinear } from 'd3';
+import { select, line, axisBottom, axisLeft, curveCardinal, scaleLinear } from 'd3';
 import './line.css';
 
 
@@ -14,10 +14,10 @@ function Line(){
     const xScale = scaleLinear().domain([0, data.length-1]).range([0, 300]);
     const yScale = scaleLinear().domain([0, 75]).range([150, 0])
     const xAxis = axisBottom(xScale).ticks(data.length).tickFormat(index => index+1);
-    const yAxis = axisRight(yScale);
+    const yAxis = axisLeft(yScale);
 
     svg.select(".x-axis").style("transform", "translateY(150px)").call(xAxis);
-    svg.select(".y-axis").style("transform", "translateX(300px)").call(yAxis);
+    svg.select(".y-axis").call(yAxis);
 
     // Generates d attr of path element
     const myLine = line()
