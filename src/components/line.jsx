@@ -9,7 +9,7 @@ function Line(){
   const svgRef = useRef();
 
   const graphWidth = 500;
-  const graphHeight = 200;
+  const graphHeight = 150;
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -45,10 +45,10 @@ function Line(){
         <g className="x-axis"/>
         <g className="y-axis"/>
       </svg>
-      <br/>
+      {/* <br/>
       <button onClick={() => setData(data.map(value => value+2))}>
         Update data
-      </button>
+      </button> */}
     </React.Fragment>
   );
 }

@@ -1,42 +1,71 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { select, line, axisBottom, axisLeft, curveCardinal, scaleLinear, scaleBand } from 'd3';
-import './line.css';
+import React, { useRef, useState, useEffect } from "react";
+import { select, axisBottom, axisLeft, scaleLinear, scaleBand } from "d3";
+import "./bar.css";
 
+const useResizeObserver = (ref) => {
+  const [dimensions, setDimensions] = useState(null);
+  useEffect(() => {
+    const observeTarget = ref.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      console.log(entries);
+    });
+    resizeObserver.observe(observeTarget);
+    return () => {
+      resizeObserver.unobserver(observeTarget);
+    };
+  }, [ref]);
+  return dimensions;
+};
 
-function Bar(){
-
+function Bar() {
   const [data, setData] = useState([21, 5, 14, 33, 4, 50, 22, 14, 43, 32]);
   const svgRef = useRef();
-
-  const graphWidth = 500;
-  const graphHeight = 200;
+  const wrapperRef = useRef();
+  const dimensions = useResizeObserver(wrapperRef);
 
   useEffect(() => {
     const svg = select(svgRef.current);
 
-    const xScale = scaleBand().domain([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).range([0, graphWidth]);
-    const yScale = scaleLinear().domain([0, 75]).range([graphHeight, 0])
+    const xScale = scaleBand()
+      .domain(data.map((value, index) => index))
+      .range([0, 300])
+      .padding(0.2);
+
+    const yScale = scaleLinear().domain([0, 75]).range([150, 0]);
+
+    const colorScale = scaleLinear()
+      .domain([0, 40, 80])
+      .range(["green", "orange", "red"])
+      .clamp(true);
+
     const xAxis = axisBottom(xScale).ticks(data.length);
     const yAxis = axisLeft(yScale);
 
-    svg.select(".x-axis").style("transform", `translateY(${graphHeight}px)`).call(xAxis);
+    svg
+      .select(".x-axis")
+      .style("transform", `translateY(${150}px)`)
+      .call(xAxis);
     svg.select(".y-axis").call(yAxis);
-
-
-
+    svg
+      .selectAll(".bar")
+      .data(data)
+      .join("rect")
+      .attr("class", "bar")
+      .style("transform", "scale(1, -1)")
+      .attr("x", (value, index) => xScale(index))
+      .attr("y", -150)
+      .attr("width", xScale.bandwidth())
+      .transition()
+      .attr("fill", colorScale)
+      .attr("height", (value) => 150 - yScale(value));
   }, [data]);
-
-  return(
-    <React.Fragment>
+  return (
+    <div ref={wrapperRef}>
       <svg ref={svgRef}>
-        <g className="x-axis"/>
-        <g className="y-axis"/>
+        <g className="x-axis" />
+        <g className="y-axis" />
       </svg>
-      <br/>
-      <button onClick={() => setData(data.map(value => value+2))}>
-        Update data
-      </button>
-    </React.Fragment>
+    </div>
   );
 }
 
