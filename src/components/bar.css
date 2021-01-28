@@ -1,5 +1,9 @@
 svg {
   background: rgb(255, 255, 255);
+  overflow: visible;
   width: 100%;
-  
+  display: block;
+}
+.bar-container {
+  margin: 20px 24px;
 }

@@ -1,18 +1,18 @@
-import React from 'react';
-import './graphcontainer.css';
+import React from "react";
+import "./graphcontainer.css";
 // Components
-import Line from './line.jsx';
-import Bar from './bar.jsx';
+import Line from "./line.jsx";
+import Bar from "./bar.jsx";
 
 function GraphContainer() {
   return (
     <div className="container">
-        <div className="item">
-          <Bar/>
-        </div>
-        <div className="item">
-          <Line/>
-        </div>
+      <div className="item">
+        <Bar />
+      </div>
+      <div className="item">
+        <Line />
+      </div>
     </div>
   );
 }

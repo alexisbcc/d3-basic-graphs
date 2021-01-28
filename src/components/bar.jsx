@@ -7,11 +7,13 @@ const useResizeObserver = (ref) => {
   useEffect(() => {
     const observeTarget = ref.current;
     const resizeObserver = new ResizeObserver((entries) => {
-      console.log(entries);
+      entries.forEach(entry => {
+        setDimensions(entry.contentRect);
+      });
     });
     resizeObserver.observe(observeTarget);
     return () => {
-      resizeObserver.unobserver(observeTarget);
+      resizeObserver.unobserve(observeTarget);
     };
   }, [ref]);
   return dimensions;
@@ -25,10 +27,10 @@ function Bar() {
 
   useEffect(() => {
     const svg = select(svgRef.current);
-
+    if (!dimensions) return;
     const xScale = scaleBand()
       .domain(data.map((value, index) => index))
-      .range([0, 300])
+      .range([0, dimensions.width])
       .padding(0.2);
 
     const yScale = scaleLinear().domain([0, 75]).range([150, 0]);
@@ -58,9 +60,9 @@ function Bar() {
       .transition()
       .attr("fill", colorScale)
       .attr("height", (value) => 150 - yScale(value));
-  }, [data]);
+  }, [data, dimensions]);
   return (
-    <div ref={wrapperRef}>
+    <div ref={wrapperRef} className="bar-container">
       <svg ref={svgRef}>
         <g className="x-axis" />
         <g className="y-axis" />
