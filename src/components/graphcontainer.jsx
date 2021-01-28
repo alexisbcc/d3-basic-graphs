@@ -2,12 +2,13 @@ import React from 'react';
 import './graphcontainer.css';
 // Components
 import Line from './line.jsx';
+import Bar from './bar.jsx';
 
 function GraphContainer() {
   return (
     <div className="container">
         <div className="item">
-          <Line/>
+          <Bar/>
         </div>
         <div className="item">
           <Line/>
