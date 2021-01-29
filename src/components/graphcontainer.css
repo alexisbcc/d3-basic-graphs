@@ -3,9 +3,12 @@
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-content: stretch;
 }
 
 .item{
   height: 280px;
+  flex-basis: 300px;
   flex-grow: 1;
 }
