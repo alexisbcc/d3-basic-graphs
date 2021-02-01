@@ -72,6 +72,7 @@ function Line() {
       .attr("stroke", "steelblue")
       .attr("stroke-width", 1);
 
+    // Tooltip
     const tooltip = svg.select(".line-tooltip").style("display", null);
 
     svg.on("touchmove mousemove", (event) => {
