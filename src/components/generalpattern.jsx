@@ -26,7 +26,6 @@ function Line() {
             .attr("r", (value) => value)
             .attr("cx", (value) => value * 2)
             .attr("cy", (value) => value * 2),
-
         (exit) => exit.remove()
       );
   }, [data]);

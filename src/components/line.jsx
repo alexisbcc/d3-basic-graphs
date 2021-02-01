@@ -6,6 +6,7 @@ import {
   axisLeft,
   curveCardinal,
   scaleLinear,
+  pointer,
 } from "d3";
 import "./line.css";
 
@@ -37,6 +38,8 @@ function Line() {
   useEffect(() => {
     const svg = select(svgRef.current);
     if (!dimensions) return;
+
+    // Scales
     const xScale = scaleLinear()
       .domain([0, data.length - 1])
       .range([0, dimensions.width]);
@@ -46,6 +49,7 @@ function Line() {
       .tickFormat((index) => index + 1);
     const yAxis = axisLeft(yScale);
 
+    // Scales join
     svg
       .select(".x-axis")
       .style("transform", `translateY(${graphHeight}px)`)
@@ -66,7 +70,25 @@ function Line() {
       .attr("d", (value) => myLine(value))
       .attr("fill", "none")
       .attr("stroke", "steelblue")
-      .attr("stroke-width", 3);
+      .attr("stroke-width", 1);
+
+    const tooltip = svg.select(".line-tooltip").style("display", null);
+
+    svg.on("touchmove mousemove", (event) => {
+      const coords = pointer(event);
+
+      tooltip
+        .style("display", null)
+        .selectAll("text")
+        .data([`${coords[1]},${coords[0]}`])
+        .join("text")
+        .text(`${coords[1]},${coords[0]}`)
+        .attr("class", "tooltip")
+        .attr("x", 50)
+        .attr("y", 50);
+    });
+
+    svg.on("touchend mouseleave", () => tooltip.style("display", "none"));
   }, [data, dimensions]);
 
   return (
@@ -74,6 +96,7 @@ function Line() {
       <svg ref={svgRef}>
         <g className="x-axis" />
         <g className="y-axis" />
+        <g className="line-tooltip" />
       </svg>
       {/* <br/>
       <button onClick={() => setData(data.map(value => value+2))}>
