@@ -8,6 +8,7 @@ import {
   scaleLinear,
   pointer,
 } from "d3";
+import { transition } from "d3-transition";
 import "./line.css";
 
 const useResizeObserver = (ref) => {
@@ -70,23 +71,33 @@ function Line() {
       .attr("d", (value) => myLine(value))
       .attr("fill", "none")
       .attr("stroke", "steelblue")
-      .attr("stroke-width", 1);
+      .attr("stroke-width", 2);
 
     // Tooltip
-    const tooltip = svg.select(".line-tooltip").style("display", null);
+    const tooltip = svg.select(".line-tooltip").style("display", "none");
 
-    svg.on("touchmove mousemove", (event) => {
+    svg.selectAll("path").on("touchmove mousemove", (event, d) => {
       const coords = pointer(event);
 
       tooltip
+        .attr("transform", `translate(${coords[0]},${coords[1]})`)
         .style("display", null)
         .selectAll("text")
         .data([`${coords[1]},${coords[0]}`])
         .join("text")
-        .text(`${coords[1]},${coords[0]}`)
+        .text(d)
         .attr("class", "tooltip")
-        .attr("x", 50)
-        .attr("y", 50);
+        .selectAll("path")
+        .data([null])
+        .join("path")
+        .attr("fill", "white")
+        .attr("stroke", "black")
+        .attr(
+          "d",
+          `M${-50 / 2 - 10},5H-5l5,-5l5,5H${50 / 2 + 10}v${40 + 20}h-${
+            50 + 20
+          }z`
+        );
     });
 
     svg.on("touchend mouseleave", () => tooltip.style("display", "none"));
