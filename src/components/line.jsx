@@ -4,14 +4,14 @@ import {
   line,
   axisBottom,
   axisLeft,
-  curveCardinal,
   scaleLinear,
   pointer,
-  bisector
+  bisector,
+  max,
 } from "d3";
-import { transition } from "d3-transition";
 import "./line.css";
 
+// Container observer to resize graph
 const useResizeObserver = (ref) => {
   const [dimensions, setDimensions] = useState(null);
   useEffect(() => {
@@ -29,28 +29,12 @@ const useResizeObserver = (ref) => {
   return dimensions;
 };
 
-function Line() {
-  const [data, setData] = useState([
-    { x: 0, y: 21 },
-    { x: 1, y: 14 },
-    { x: 2, y: 15 },
-    { x: 3, y: 4 },
-    { x: 4, y: 1 },
-    { x: 5, y: 43 },
-    { x: 6, y: 50 },
-    { x: 7, y: 51 },
-    { x: 8, y: 18 },
-    { x: 9, y: 33 },
-    { x: 10, y: 38 },
-    { x: 11, y: 3 },
-    { x: 12, y: 25 },
-    { x: 13, y: 47 },
-  ]);
+function Line(props) {
+  const { data, height } = props;
+
   const svgRef = useRef();
   const wrapperRef = useRef();
   const dimensions = useResizeObserver(wrapperRef);
-
-  const graphHeight = 150;
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -58,19 +42,18 @@ function Line() {
 
     // Scales
     const xScale = scaleLinear()
-      .domain([0, data.length - 1])
+      .domain([0, max(data, (entry) => entry.x)])
       .range([0, dimensions.width]);
-    const yScale = scaleLinear().domain([0, 60]).range([graphHeight, 0]);
+    const yScale = scaleLinear().domain([0, 60]).range([height, 0]);
     const xAxis = axisBottom(xScale)
       .ticks(data.length)
       .tickFormat((index) => index);
-    const yAxis = axisLeft(yScale)
-    .ticks(5);
+    const yAxis = axisLeft(yScale).ticks(5);
 
     // Axis
     svg
       .select(".x-axis")
-      .style("transform", `translateY(${graphHeight}px)`)
+      .style("transform", `translateY(${height}px)`)
       .call(xAxis);
     svg.select(".y-axis").call(yAxis);
 
@@ -80,35 +63,39 @@ function Line() {
       .y((value) => yScale(value.y));
 
     svg
-      .selectAll(".line")
+      .select(".line")
       .data([data])
       .join("path")
-      .attr("class", "line")
-      .attr("d", (value) => myLine(value))
       .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 2);
+      .attr("stroke", "rgb(89, 153, 255)")
+      .attr("stroke-width", 2)
+      .attr("stroke-linejoin", "round")
+      .attr("d", (value) => myLine(value));
 
     // Tooltip
-    const tooltip = svg.select(".line-tooltip").style("display", "none");
+      const tooltip = svg
+        .select(".line-tooltip")
+        .style("display", "none");
 
     svg.on("touchmove mousemove", (event) => {
       // Find the value of the closest point
       // Extract the data from the path element
       const lineData = svg.select(".line").data()[0];
-      // Convert the corrdinate from pointer (range - svg dimensions) to domain
+      // Convert the corrdinate from pointer (range - screen space) to domain (data space)
       const domainXCoordinate = xScale.invert(pointer(event)[0]);
       // find the index to the closest value
-      const coords = bisector(d => d.x).center(lineData, domainXCoordinate);
+      const coords = bisector((d) => d.x).center(lineData, domainXCoordinate);
 
       tooltip
+        .style("display", null)
         .attr(
           "transform",
-          `translate(${xScale(lineData[coords].x)},${yScale(lineData[coords].y)})`
+          `translate(${xScale(lineData[coords].x)},${yScale(
+            lineData[coords].y
+          )})`
         )
-        .style("display", null)
         .style("pointer-events", "none")
-        .style("font", "10px sans-serif");
+        .style("font", "15px");
 
       const path = tooltip
         .selectAll("path")
@@ -117,7 +104,8 @@ function Line() {
         .attr("fill", "white")
         .attr("stroke", "black");
 
-      const text = tooltip
+      const text = svg
+        .select(".line-tooltip")
         .selectAll("text")
         .data([lineData[coords].y])
         .join("text")
@@ -133,11 +121,12 @@ function Line() {
     });
 
     svg.on("touchend mouseleave", () => tooltip.style("display", "none"));
-  }, [data, dimensions]);
+  }, [dimensions, data, height]);
 
   return (
     <div ref={wrapperRef} className="line-container">
-      <svg ref={svgRef}>
+      <svg ref={svgRef} height={height}>
+        <path className="line" />
         <g className="x-axis" />
         <g className="y-axis" />
         <g className="line-tooltip" />
