@@ -8,6 +8,8 @@ import {
   pointer,
   bisector,
   max,
+  min,
+  ticks
 } from "d3";
 import "./line.css";
 
@@ -42,13 +44,17 @@ function Line(props) {
 
     // Scales
     const xScale = scaleLinear()
-      .domain([0, max(data, (entry) => entry.x)])
+      .domain([min(data, (d) => d.x), max(data, (d) => d.x)])
       .range([0, dimensions.width]);
-    const yScale = scaleLinear().domain([0, 60]).range([height, 0]);
+    const yScale = scaleLinear()
+      .domain([min(data, (d) => d.y), max(data, (d) => d.y)])
+      .range([height, 0]);
     const xAxis = axisBottom(xScale)
       .ticks(data.length)
       .tickFormat((index) => index);
-    const yAxis = axisLeft(yScale).ticks(5);
+    const yAxis = axisLeft(yScale)
+      .ticks()
+      .tickFormat((index) => index);
 
     // Axis
     svg
@@ -63,19 +69,22 @@ function Line(props) {
       .y((value) => yScale(value.y));
 
     svg
-      .select(".line")
+      .selectAll(".line")
       .data([data])
       .join("path")
+      .attr("class", "line")
       .attr("fill", "none")
       .attr("stroke", "rgb(89, 153, 255)")
       .attr("stroke-width", 2)
-      .attr("stroke-linejoin", "round")
       .attr("d", (value) => myLine(value));
 
     // Tooltip
-      const tooltip = svg
-        .select(".line-tooltip")
-        .style("display", "none");
+    const tooltip = svg
+      .selectAll(".line-tooltip")
+      .data([null])
+      .join("g")
+      .attr("class", "line-tooltip")
+      .style("display", "none");
 
     svg.on("touchmove mousemove", (event) => {
       // Find the value of the closest point
@@ -126,15 +135,9 @@ function Line(props) {
   return (
     <div ref={wrapperRef} className="line-container">
       <svg ref={svgRef} height={height}>
-        <path className="line" />
         <g className="x-axis" />
         <g className="y-axis" />
-        <g className="line-tooltip" />
       </svg>
-      {/* <br/>
-      <button onClick={() => setData(data.map(value => value+2))}>
-        Update data
-      </button> */}
     </div>
   );
 }

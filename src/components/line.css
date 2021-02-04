@@ -4,7 +4,7 @@ svg {
   display: block;
 }
 .line-container {
-  margin: 20px 30px;
+  margin: 20px 25px 20px 45px;
 }
 .x-axis{
   font-size: 12px;
@@ -12,5 +12,13 @@ svg {
 }
 .y-axis{
   font-size: 12px;
+  color: rgb(68, 70, 70);
+}
+
+.line-tooltip path {
+  stroke-width: 0.5px;
+  stroke:rgb(68, 70, 70);
+}
+.line-tooltip text {
   color: rgb(68, 70, 70);
 }
