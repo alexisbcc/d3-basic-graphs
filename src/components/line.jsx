@@ -97,6 +97,8 @@ function Line(props) {
 
       tooltip
         .style("display", null)
+        .transition()
+        .duration(40)
         .attr(
           "transform",
           `translate(${xScale(lineData[coords].x)},${yScale(
