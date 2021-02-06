@@ -8,8 +8,7 @@ import {
   pointer,
   bisector,
   max,
-  min,
-  ticks
+  min
 } from "d3";
 import "./line.css";
 
@@ -93,17 +92,15 @@ function Line(props) {
       // Convert the corrdinate from pointer (range - screen space) to domain (data space)
       const domainXCoordinate = xScale.invert(pointer(event)[0]);
       // find the index to the closest value
-      const coords = bisector((d) => d.x).center(lineData, domainXCoordinate);
+      const index = bisector((d) => d.x).center(lineData, domainXCoordinate);
 
       tooltip
         .style("display", null)
         .transition()
-        .duration(40)
+        .duration(500)
         .attr(
           "transform",
-          `translate(${xScale(lineData[coords].x)},${yScale(
-            lineData[coords].y
-          )})`
+          `translate(${xScale(lineData[index].x)},${yScale(lineData[index].y)})`
         )
         .style("pointer-events", "none")
         .style("font", "15px");
@@ -115,10 +112,9 @@ function Line(props) {
         .attr("fill", "white")
         .attr("stroke", "black");
 
-      const text = svg
-        .select(".line-tooltip")
+      const text = tooltip
         .selectAll("text")
-        .data([lineData[coords].y])
+        .data([lineData[index].y])
         .join("text")
         .text((d) => d);
 
