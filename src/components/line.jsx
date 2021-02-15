@@ -8,7 +8,7 @@ import {
   pointer,
   bisector,
   max,
-  min
+  min,
 } from "d3";
 import "./line.css";
 
@@ -73,7 +73,7 @@ function Line(props) {
       .join("path")
       .attr("class", "line")
       .attr("fill", "none")
-      .attr("stroke", "rgb(89, 153, 255)")
+      .attr("stroke", "#42A5B3")
       .attr("stroke-width", 2)
       .attr("d", (value) => myLine(value));
 
@@ -89,21 +89,30 @@ function Line(props) {
       // Find the value of the closest point
       // Extract the data from the path element
       const lineData = svg.select(".line").data()[0];
-      // Convert the corrdinate from pointer (range - screen space) to domain (data space)
+      // Convert the coordinate from pointer (range - screen space) to domain (data space)
       const domainXCoordinate = xScale.invert(pointer(event)[0]);
       // find the index to the closest value
       const index = bisector((d) => d.x).center(lineData, domainXCoordinate);
+      const xCoord = xScale(lineData[index].x);
+      const yCoord = yScale(lineData[index].y);
 
       tooltip
         .style("display", null)
         .transition()
-        .duration(500)
+        .duration(80)
         .attr(
           "transform",
           `translate(${xScale(lineData[index].x)},${yScale(lineData[index].y)})`
         )
         .style("pointer-events", "none")
         .style("font", "15px");
+
+      tooltip
+        .selectAll("circle")
+        .data([null])
+        .join("circle")
+        .attr("r", 3)
+        .attr("fill", "#005D6E");
 
       const path = tooltip
         .selectAll("path")
