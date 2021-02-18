@@ -9,10 +9,12 @@ svg {
 .x-axis{
   font-size: 12px;
   color: #8E8883;
+  font-family: sans-serif;
 }
 .y-axis{
   font-size: 12px;
   color: #8E8883;
+  font-family: sans-serif;
 }
 
 .line-tooltip path {

@@ -93,8 +93,6 @@ function Line(props) {
       const domainXCoordinate = xScale.invert(pointer(event)[0]);
       // find the index to the closest value
       const index = bisector((d) => d.x).center(lineData, domainXCoordinate);
-      const xCoord = xScale(lineData[index].x);
-      const yCoord = yScale(lineData[index].y);
 
       tooltip
         .style("display", null)
